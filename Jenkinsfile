@@ -66,11 +66,13 @@ pipeline {
             steps {
                 script {
                     // Login to Docker Hub
-                    sh "echo ${DOCKER_HUB_CREDS_PSW} | docker login -u ${DOCKER_HUB_CREDS_USR} --password-stdin"
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_HUB_CREDS_USR', passwordVariable: 'DOCKER_HUB_CREDS_PSW')]) {
+                        sh "echo ${DOCKER_HUB_CREDS_PSW} | docker login -u ${DOCKER_HUB_CREDS_USR} --password-stdin"
                     
-                    // Push images
-                    sh "docker push ${FRONTEND_IMAGE}:${VERSION}"
-                    sh "docker push ${BACKEND_IMAGE}:${VERSION}"
+                        // Push images
+                        sh "docker push ${FRONTEND_IMAGE}:${VERSION}"
+                        sh "docker push ${BACKEND_IMAGE}:${VERSION}"
+                    }
                 }
             }
         }
@@ -102,11 +104,11 @@ pipeline {
         }
         
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Pipeline completed successfully!'
         }
         
         failure {
-            echo 'Pipeline failed! Check the logs for details.'
+            echo '❌ Pipeline failed! Check the logs for details.'
         }
     }
 }
