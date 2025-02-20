@@ -36,8 +36,8 @@ jobs:
       # Install frontend dependencies
       - name: Install frontend dependencies
         run: |
-          npm install
-          npm install fullcalendar@4.0.0-alpha.4
+          npm install --legacy-peer-deps
+          npm install fullcalendar@4.0.0-alpha.4 --legacy-peer-deps
         working-directory: frontend
 
       # Build frontend with Angular
