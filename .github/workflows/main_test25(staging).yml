@@ -54,4 +54,10 @@ jobs:
           app-name: 'test25'
           slot-name: 'staging'
           package: '*.jar'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_TEST25 }}
+          publish-profile: |
+            <?xml version="1.0" encoding="utf-8"?>
+            <publishData>
+              <publishProfile profileName="test25-staging - Web Deploy" publishMethod="MSDeploy" publishUrl="test25-staging-byfzheeehjbjdjdt.scm.francecentral-01.azurewebsites.net:443" msdeploySite="test25__staging" userName="$test25__staging" userPWD="u75unmYyKX7QibL8gBlxZbEQsp7Jcz2NDf6HsKK8lrwen5h0Wjyxcn0Ckiiv" destinationAppUrl="http://test25-staging-byfzheeehjbjdjdt.francecentral-01.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites">
+                <databases />
+              </publishProfile>
+            </publishData>
