@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy JAR app to Azure Web App - test25
+name: Build and deploy JAR app to Azure Web App
 
 on:
   push:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -23,16 +20,39 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
+          cache: 'maven'
 
-      - name: Build with Maven
-        run: mvn clean install
-        working-directory: backend
+      - name: Build Backend
+        run: |
+          cd backend
+          ./mvnw clean package -DskipTests
+        env:
+          SPRING_PROFILES_ACTIVE: prod
 
-      - name: Upload artifact for deployment job
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '10.x'
+          cache: 'npm'
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm install -g @angular/cli@7.3.9
+          ng build --prod
+        
+      - name: Upload backend artifact
         uses: actions/upload-artifact@v4
         with:
-          name: java-app
+          name: backend-jar
           path: '${{ github.workspace }}/backend/target/*.jar'
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: '${{ github.workspace }}/frontend/dist'
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,10 +62,15 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
       
     steps:
-      - name: Download artifact from build job
+      - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
-          name: java-app
+          name: backend-jar
+          
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
