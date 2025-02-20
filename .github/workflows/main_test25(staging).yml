@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy JAR app and Angular frontend to Azure Web App - test25
 
 on:
@@ -36,11 +33,22 @@ jobs:
         with:
           node-version: '10.24.1'
 
-      # Install dependencies and build frontend (Angular)
+      # Install dependencies for frontend
       - name: Install dependencies for frontend
         run: npm install
         working-directory: frontend
 
+      # Install fullcalendar package to avoid the error
+      - name: Install fullcalendar dependency
+        run: npm install fullcalendar
+        working-directory: frontend
+
+      # Update caniuse-lite to avoid warnings
+      - name: Update caniuse-lite
+        run: npm update caniuse-lite
+        working-directory: frontend
+
+      # Build frontend with Angular
       - name: Build frontend with Angular
         run: npm run build --prod
         working-directory: frontend
@@ -76,7 +84,7 @@ jobs:
         with:
           name: frontend-app
 
-      # Deploy to Azure Web App
+      # Deploy to Azure Web App (Backend)
       - name: Deploy to Azure Web App (Backend)
         id: deploy-backend
         uses: azure/webapps-deploy@v3
