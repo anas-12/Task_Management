@@ -29,7 +29,11 @@ jobs:
       - name: Build frontend with Angular
         run: |
           cd frontend
-          npm run build -- --configuration=production
+          npm run build -- --configuration=production --base-href=/
+
+      - name: Copy web.config
+        run: |
+          cp frontend/web.config frontend/dist/frontend/
 
       - name: Upload frontend build folder
         uses: actions/upload-artifact@v4
